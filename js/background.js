@@ -1,9 +1,9 @@
 ﻿var currenturl;
 var record = sessionStorage;
-var status = true;
+var status = false;
 
 chrome.contextMenus.create({
-    title: "Stop Sensinfor",
+    title: "Start Sensinfor",
     id: "Sensinfor",
     onclick: function(){
         if (status == 'true') {
@@ -96,6 +96,7 @@ function copyTextToClipboard(text) {
 
 
 function show(title, content, tagname) {
+  localStorage.setItem(Date.parse(new Date()), content);
   var notice = new Notification(title, {
     body: content,
     icon: "image/icon48.png",
@@ -122,10 +123,8 @@ function gitfinder(protocol, host, port, path){
       complete: function(xmlhttp) { 
         if (xmlhttp.readyState == 4) { 
           if (xmlhttp.status == 200) {  
-                var ct=xmlhttp.getResponseHeader("Connection");
-                var cct= "close";
-                if(ct != cct){
-                  var responseText = xmlhttp.responseText;
+                var responseText = xmlhttp.responseText;
+                if(responseText){
                   var match = responseText.match(/repository/i);
                   var match2 = responseText.match(/DOCTYPE/i);
                     if(match && !match2){
@@ -153,10 +152,10 @@ function svnfinder(protocol, host, port, path){
 				if (xmlhttp.readyState == 4) { 
 				 		//状态码
           if (xmlhttp.status == 200) {  
-                var ct=xmlhttp.getResponseHeader("Connection");
-                var cct= "close";
-                if(ct != cct){
-                 	var responseText = xmlhttp.responseText;
+                // var ct=xmlhttp.getResponseHeader("Connection");
+                // var cct= "close";
+                var responseText = xmlhttp.responseText;
+                if(responseText){
                 	var match1 = responseText.match(/svn/i);
                   var match2 = responseText.match(/dir/i);
                   var match3 = responseText.match(/DOCTYPE/i);
@@ -185,13 +184,11 @@ function svnfindernew(protocol, host, port, path){
            if (xmlhttp.readyState == 4) { 
               //状态码
             if (xmlhttp.status == 200) {  
-                //updateIcon("fire");
-                 var ct=xmlhttp.getResponseHeader("Connection");
-                 var cct= "close";
-                 if(ct != cct){
-                  var responseText = xmlhttp.responseText;
+                var responseText = xmlhttp.responseText;
+                 if(responseText){
                   var match = responseText.match(/SQLite/i);
-                  if(match){
+                  var match3 = responseText.match(/DOCTYPE/i);
+                  if(match && !match3){
                     updateIcon("fire");
                     show("Svn Leak", svnurl_new, svnurl_new);
                   }
@@ -217,7 +214,8 @@ function bash(protocol, host, port, path){
 				 		if (xmlhttp.status == 200) {  
              	var responseText = xmlhttp.responseText;
             	var match = responseText.match(/((cd)\s\w*\/)|(vi\s\w*\.\w*)/i);
-  						if(match){
+              var match3 = responseText.match(/DOCTYPE/i);
+  						if(match && !match3){
   							updateIcon("fire");
   							show("Bash History Leak", bashurl, bashurl);
   						}
@@ -388,7 +386,7 @@ function leakFileFind(protocol,host, port, path){
 
 function backupfileFind(protocol, host, port, path, OnlyPathName) {
     //备份文件
-    var backFilenameArr = new Array('backup', 'www', '2017', '2018', 'back', 'upload')
+    var backFilenameArr = new Array('backup', 'www', '2017', '2018', 'back', 'upload', '1')
     if (!getStorage(protocol, host, port, path + 'backupFind')) {
       for (var i = backFilenameArr.length - 1; i >= 0; i--) {
         backupfinder_zip(protocol, host, port, path, backFilenameArr[i]);
